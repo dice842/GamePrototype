@@ -7,9 +7,8 @@ using UnityEngine.EventSystems;
 public class PlayerMove : MonoBehaviour
 {
     public float moveSpeed = 5.0f;
-    public float dashSpeed = 3.0f;  
-    public float dashDuration = 0.1f;  
-    private float dashTimer = 0f;    
+    public float dashSpeed = 3.0f;
+    public float dashDuration = 0.1f;
 
     private Rigidbody2D rb;
 
@@ -19,29 +18,28 @@ public class PlayerMove : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         playerControl = GetComponent<PlayerControl>();
     }
-    public void Move(Vector3 moveDir)
+    public void Run(Vector3 moveDir)
     {
-            transform.Translate(moveDir * moveSpeed * Time.deltaTime);
+        transform.Translate(moveDir * moveSpeed * Time.deltaTime);
+    }
+    public void Walk(Vector3 moveDir)
+    {
+        transform.Translate(moveDir * (moveSpeed /2) * Time.deltaTime);
     }
     public void Dash(Vector3 dashDir)
     {
-        StartDash(dashDir);
-
-        dashTimer += Time.deltaTime;
-
-        if (dashTimer >= dashDuration)
-        {
-            EndDash();
-        }
-    }
-    
-    public void StartDash(Vector3 dir)
-    {
         playerControl.isDashing = true;
-        dashTimer = 0f;
         rb.velocity = Vector2.zero;
+        StartCoroutine(StartDash(dashDir));
 
+    }
+
+    IEnumerator StartDash(Vector3 dir)
+    {
         rb.velocity = dir * dashSpeed;
+        yield return new WaitForSeconds(dashDuration);
+        EndDash();
+        yield break;
     }
 
     void EndDash()
