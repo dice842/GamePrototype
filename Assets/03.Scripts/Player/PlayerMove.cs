@@ -20,7 +20,11 @@ public class PlayerMove : MonoBehaviour
     }
     public void Run(Vector3 moveDir)
     {
-        transform.Translate(moveDir * moveSpeed * Time.deltaTime);
+        if(moveDir != Vector3.zero)
+        {
+            transform.Translate(moveDir * moveSpeed * Time.deltaTime);
+            playerControl.canUseItem = false;
+        }
     }
     public void Walk(Vector3 moveDir)
     {
@@ -28,7 +32,8 @@ public class PlayerMove : MonoBehaviour
     }
     public void Dash(Vector3 dashDir)
     {
-        playerControl.isDashing = true;
+        playerControl.canMove = false;
+        playerControl.canUseItem = false;
         rb.velocity = Vector2.zero;
         StartCoroutine(StartDash(dashDir));
 
@@ -44,7 +49,7 @@ public class PlayerMove : MonoBehaviour
 
     void EndDash()
     {
-        playerControl.isDashing = false;
+        playerControl.canMove = true;
         rb.velocity = Vector2.zero;
     }
 }
