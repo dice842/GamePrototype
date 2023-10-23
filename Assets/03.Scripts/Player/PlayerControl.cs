@@ -20,7 +20,7 @@ public class PlayerControl : MonoBehaviour
     private bool _initialized;
 
     PlayerMove playerMove;
-    WeaponControl weaponControl;
+    Weapon weapon;
 
     Vector3 moveDirection;
     private void Start()
@@ -28,7 +28,7 @@ public class PlayerControl : MonoBehaviour
         hand = transform.GetChild(0).gameObject;
         playerMove = GetComponent<PlayerMove>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        weaponControl = GetComponentInChildren<WeaponControl>();
+        weapon = GetComponentInChildren<Weapon>();
         _initialized = true;
     }
     private void Update()
@@ -43,7 +43,7 @@ public class PlayerControl : MonoBehaviour
         if (canMove)
         {
             canUseItem = true;
-            if(Input.GetKey(KeyCode.LeftShift)) playerMove.Run(moveDirection);
+            if (Input.GetKey(KeyCode.LeftShift)) playerMove.Run(moveDirection);
 
             else playerMove.Walk(moveDirection);
 
@@ -56,14 +56,14 @@ public class PlayerControl : MonoBehaviour
 
         HandPosUpdate(canUseItem ? LookAtMouse() : moveDirection);
 
-        if(canUseItem)
+        if (canUseItem)
         {
             if (Input.GetMouseButton(0))
             {
                 useHand();
             }
         }
-        
+
 
     }
     public Vector3 LookAtMouse()
@@ -82,14 +82,13 @@ public class PlayerControl : MonoBehaviour
     }
     private void HandPosUpdate(Vector3 lookBir)
     {
-            float angle = Mathf.Atan2(lookBir.y, lookBir.x) * Mathf.Rad2Deg;
-            hand.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+        hand.transform.position = transform.position + (lookBir.normalized * 0.5f);
     }
     void useHand()
     {
         if (transform.GetChild(0).tag == "MainWeapon")
         {
-            weaponControl.Operate(LookAtMouse());
+            weapon.Operate(LookAtMouse());
         }
     }
 }
