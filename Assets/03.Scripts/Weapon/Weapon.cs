@@ -16,6 +16,8 @@ public class Weapon : MonoBehaviour
     int maxBullet;
     [SerializeField] int currentBullet = 0;
 
+    private LineRenderer lineRenderer;
+
     private float gnuAccuracy;
 
     float reloadSpeed;
@@ -29,6 +31,10 @@ public class Weapon : MonoBehaviour
         currentBullet = maxBullet;
 
         reloadSpeed = weaponTypes.ReloadSpeed * (1 - (0.1f * playerLever.Marksmanship));
+
+        lineRenderer = GetComponent<LineRenderer>();
+        lineRenderer.enabled = false;
+        lineRenderer.positionCount = 2;
     }
     private void Update()
     {
@@ -43,9 +49,9 @@ public class Weapon : MonoBehaviour
 
         float angleInRadians = randomAngle * Mathf.Deg2Rad;
 
-        Vector3 randomDirection = new Vector3(Mathf.Cos(angleInRadians), Mathf.Sin(angleInRadians), 0);
+        Vector2 randomDirection = new Vector2(Mathf.Cos(angleInRadians), Mathf.Sin(angleInRadians));
 
-        return dir + randomDirection;
+        return dir + new Vector3 (randomDirection.x,randomDirection.y, 0);
     }
     public void Operate(Vector3 shootBir)
     {
@@ -65,15 +71,25 @@ public class Weapon : MonoBehaviour
     {
         currentBullet--;
         Vector3 randomBir = Accuracy(bulletBir);
+        lineRenderer.SetPosition(0, transform.position);
         Debug.DrawRay(transform.position, randomBir.normalized * weaponTypes.ShootRange * bulletTypes.BulletRange, new Color(0, 1, 0));
         RaycastHit2D rayHit = Physics2D.Raycast(transform.position, randomBir.normalized * weaponTypes.ShootRange * bulletTypes.BulletRange);
+        if (rayHit.collider == null) lineRenderer.SetPosition(1, transform.position + randomBir.normalized * weaponTypes.ShootRange * bulletTypes.BulletRange);
+        else lineRenderer.SetPosition(1, transform.position + rayHit.collider.transform.position);
+        StartCoroutine(DrawLine());
         HitBullet(rayHit);
         StartCoroutine(ShootingDelay(weaponTypes.ShootSpeed));
     }
-
+    IEnumerator DrawLine()
+    {
+        lineRenderer.enabled = true;
+        yield return new WaitForSeconds(0.1f);
+        lineRenderer.enabled = false;
+        yield break;
+    }
     private void HitBullet(RaycastHit2D rayHit)
     {
-        if (rayHit.collider == null)
+        if (rayHit.collider != null)
         {
             if (rayHit.collider.tag == "Enemy")
             {

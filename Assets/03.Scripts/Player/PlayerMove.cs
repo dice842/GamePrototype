@@ -13,15 +13,18 @@ public class PlayerMove : MonoBehaviour
     private Rigidbody2D rb;
 
     PlayerControl playerControl;
+    PlayerAdility playerAdility;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         playerControl = GetComponent<PlayerControl>();
+        playerAdility = GetComponent<PlayerAdility>();
     }
     public void Run(Vector3 moveDir)
     {
         if(moveDir != Vector3.zero)
         {
+            playerAdility.useStamina(0.1f);
             transform.Translate(moveDir * moveSpeed * Time.deltaTime);
             playerControl.canUseItem = false;
         }
@@ -35,6 +38,7 @@ public class PlayerMove : MonoBehaviour
         playerControl.canMove = false;
         playerControl.canUseItem = false;
         rb.velocity = Vector2.zero;
+        playerAdility.useStamina(10f);
         StartCoroutine(StartDash(dashDir));
 
     }

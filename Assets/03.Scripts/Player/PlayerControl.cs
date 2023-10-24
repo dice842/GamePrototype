@@ -21,6 +21,7 @@ public class PlayerControl : MonoBehaviour
 
     PlayerMove playerMove;
     Weapon weapon;
+    PlayerAdility playerAdility;
 
     Vector3 moveDirection;
     private void Start()
@@ -29,6 +30,7 @@ public class PlayerControl : MonoBehaviour
         playerMove = GetComponent<PlayerMove>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         weapon = GetComponentInChildren<Weapon>();
+        playerAdility = GetComponent<PlayerAdility>();
         _initialized = true;
     }
     private void Update()
@@ -43,11 +45,11 @@ public class PlayerControl : MonoBehaviour
         if (canMove)
         {
             canUseItem = true;
-            if (Input.GetKey(KeyCode.LeftShift)) playerMove.Run(moveDirection);
+            if (Input.GetKey(KeyCode.LeftShift) && playerAdility.CurrentStamina > 0) playerMove.Run(moveDirection);
 
             else playerMove.Walk(moveDirection);
 
-            if (Input.GetKeyDown(KeyCode.Space) && moveDirection != Vector3.zero && canDash)
+            if (Input.GetKeyDown(KeyCode.Space) && moveDirection != Vector3.zero && canDash && playerAdility.CurrentStamina > 10)
             {
                 playerMove.Dash(moveDirection);
                 StartCoroutine(DashCooldown());
