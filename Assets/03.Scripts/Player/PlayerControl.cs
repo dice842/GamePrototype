@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,6 +23,7 @@ public class PlayerControl : MonoBehaviour
     PlayerMove playerMove;
     Weapon weapon;
     PlayerAdility playerAdility;
+    ThrownWeapons thrownWeapons;
 
     Vector3 moveDirection;
     private void Start()
@@ -29,7 +31,6 @@ public class PlayerControl : MonoBehaviour
         hand = transform.GetChild(0).gameObject;
         playerMove = GetComponent<PlayerMove>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        weapon = GetComponentInChildren<Weapon>();
         playerAdility = GetComponent<PlayerAdility>();
         _initialized = true;
     }
@@ -56,18 +57,27 @@ public class PlayerControl : MonoBehaviour
             }
         }
 
-        HandPosUpdate(canUseItem ? LookAtMouse() : moveDirection);
+        if (hand.gameObject != null)
+        {
+            HandPosUpdate(canUseItem ? LookAtMouse() : moveDirection);
+        }
 
         if (canUseItem)
         {
             if (Input.GetMouseButton(0))
             {
-                useHand();
+                useHand1();
+            }
+            else if (Input.GetMouseButton(1))
+            {
+                useHand2();
             }
         }
 
 
     }
+
+
     public Vector3 LookAtMouse()
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -82,15 +92,35 @@ public class PlayerControl : MonoBehaviour
         canDash = true;
         yield break;
     }
+    public IEnumerator useItemColldown(float collTime)
+    {
+        canUseItem = false;
+        yield return new WaitForSeconds(collTime);
+        canUseItem = true;
+    }
     private void HandPosUpdate(Vector3 lookBir)
     {
         hand.transform.position = transform.position + (lookBir.normalized * 0.5f);
     }
-    void useHand()
+    void useHand1()
     {
         if (transform.GetChild(0).tag == "MainWeapon")
         {
+            weapon = GetComponentInChildren<Weapon>();
             weapon.Operate(LookAtMouse());
+        }
+        else if (transform.GetChild(0).tag == "ThrownWeapons")
+        {
+            thrownWeapons = GetComponentInChildren<ThrownWeapons>();
+            thrownWeapons.Thrown(LookAtMouse());
+        }
+    }
+    private void useHand2()
+    {
+        if (transform.GetChild(0).tag == "ThrownWeapons")
+        {
+            thrownWeapons = GetComponentInChildren<ThrownWeapons>();
+            thrownWeapons.ChargingWeapon();
         }
     }
 }

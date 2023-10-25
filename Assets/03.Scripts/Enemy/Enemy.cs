@@ -17,7 +17,6 @@ public class Enemy : MonoBehaviour
             }
         }
     }
-
     private void EnemyDie()
     {
         Destroy(this.gameObject);
