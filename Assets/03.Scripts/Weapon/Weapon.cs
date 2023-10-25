@@ -49,7 +49,7 @@ public class Weapon : MonoBehaviour
 
         float angleInRadians = randomAngle * Mathf.Deg2Rad;
 
-        Vector2 randomDirection = new Vector2(Mathf.Cos(angleInRadians), Mathf.Sin(angleInRadians));
+        Vector2 randomDirection = new Vector2(Mathf.Sin(angleInRadians), Mathf.Sin(angleInRadians));
 
         return dir + new Vector3 (randomDirection.x,randomDirection.y, 0);
     }
@@ -71,13 +71,16 @@ public class Weapon : MonoBehaviour
     {
         currentBullet--;
         Vector3 randomBir = Accuracy(bulletBir);
-        lineRenderer.SetPosition(0, transform.position);
-        Debug.DrawRay(transform.position, randomBir.normalized * weaponTypes.ShootRange * bulletTypes.BulletRange, new Color(0, 1, 0));
+        
         RaycastHit2D rayHit = Physics2D.Raycast(transform.position, randomBir.normalized * weaponTypes.ShootRange * bulletTypes.BulletRange);
+
+        lineRenderer.SetPosition(0, transform.position);
         if (rayHit.collider == null) lineRenderer.SetPosition(1, transform.position + randomBir.normalized * weaponTypes.ShootRange * bulletTypes.BulletRange);
-        else lineRenderer.SetPosition(1, transform.position + rayHit.collider.transform.position);
+        else lineRenderer.SetPosition(1, transform.position - (transform.position - rayHit.collider.transform.position));
         StartCoroutine(DrawLine());
+
         HitBullet(rayHit);
+
         StartCoroutine(ShootingDelay(weaponTypes.ShootSpeed));
     }
     IEnumerator DrawLine()
