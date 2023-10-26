@@ -72,14 +72,14 @@ public class Weapon : MonoBehaviour
         currentBullet--;
         Vector3 randomBir = Accuracy(bulletBir);
         
-        RaycastHit2D rayHit = Physics2D.Raycast(transform.position, randomBir.normalized * weaponTypes.ShootRange * bulletTypes.BulletRange);
+        RaycastHit2D lineHit = Physics2D.Linecast(transform.position, transform.position + (randomBir.normalized * weaponTypes.ShootRange * bulletTypes.BulletRange));
 
         lineRenderer.SetPosition(0, transform.position);
-        if (rayHit.collider == null) lineRenderer.SetPosition(1, transform.position + randomBir.normalized * weaponTypes.ShootRange * bulletTypes.BulletRange);
-        else lineRenderer.SetPosition(1, transform.position - (transform.position - rayHit.collider.transform.position));
+        if (lineHit.collider == null) lineRenderer.SetPosition(1, transform.position + randomBir.normalized * weaponTypes.ShootRange * bulletTypes.BulletRange);
+        else lineRenderer.SetPosition(1, transform.position - (transform.position - lineHit.collider.transform.position));
         StartCoroutine(DrawLine());
 
-        HitBullet(rayHit);
+        HitBullet(lineHit);
 
         StartCoroutine(ShootingDelay(weaponTypes.ShootSpeed));
     }
@@ -90,13 +90,13 @@ public class Weapon : MonoBehaviour
         lineRenderer.enabled = false;
         yield break;
     }
-    private void HitBullet(RaycastHit2D rayHit)
+    private void HitBullet(RaycastHit2D lineHit)
     {
-        if (rayHit.collider != null)
+        if (lineHit.collider != null)
         {
-            if (rayHit.collider.tag == "Enemy")
+            if (lineHit.collider.tag == "Enemy")
             {
-                enemy = rayHit.collider.GetComponent<Enemy>();
+                enemy = lineHit.collider.GetComponent<Enemy>();
                 enemy.HitEnemy(bulletTypes.BulletDamage);
             }
         }

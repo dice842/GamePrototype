@@ -62,19 +62,7 @@ public class PlayerControl : MonoBehaviour
             HandPosUpdate(canUseItem ? LookAtMouse() : moveDirection);
         }
 
-        if (canUseItem)
-        {
-            if (Input.GetMouseButton(0))
-            {
-                useHand1();
-            }
-            else if (Input.GetMouseButton(1))
-            {
-                useHand2();
-            }
-        }
-
-
+        if (canUseItem) useHand();
     }
 
 
@@ -92,7 +80,11 @@ public class PlayerControl : MonoBehaviour
         canDash = true;
         yield break;
     }
-    public IEnumerator useItemColldown(float collTime)
+    public void useItemCooldown(float collTime)
+    {
+        StartCoroutine(itemCooldown(collTime));
+    }
+    IEnumerator itemCooldown(float collTime)
     {
         canUseItem = false;
         yield return new WaitForSeconds(collTime);
@@ -102,25 +94,19 @@ public class PlayerControl : MonoBehaviour
     {
         hand.transform.position = transform.position + (lookBir.normalized * 0.5f);
     }
-    void useHand1()
+    void useHand()
     {
         if (transform.GetChild(0).tag == "MainWeapon")
         {
             weapon = GetComponentInChildren<Weapon>();
-            weapon.Operate(LookAtMouse());
+            if (Input.GetMouseButton(0))  weapon.Operate(LookAtMouse());
         }
         else if (transform.GetChild(0).tag == "ThrownWeapons")
         {
             thrownWeapons = GetComponentInChildren<ThrownWeapons>();
-            thrownWeapons.Thrown(LookAtMouse());
-        }
-    }
-    private void useHand2()
-    {
-        if (transform.GetChild(0).tag == "ThrownWeapons")
-        {
-            thrownWeapons = GetComponentInChildren<ThrownWeapons>();
-            thrownWeapons.ChargingWeapon();
+            if(Input.GetMouseButtonDown(0)) thrownWeapons.Thrown(LookAtMouse());
+            else if (Input.GetMouseButtonUp(1)) thrownWeapons.CancelCharging();
+            else if (Input.GetMouseButton (1)) thrownWeapons.ChargingWeapon(LookAtMouse());
         }
     }
 }
