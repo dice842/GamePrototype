@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class SmokeGrenades : MonoBehaviour
 {
+    [SerializeField] float duration = 30f;
     [SerializeField] float explosionDelay = 2f;
-    GameObject smokePrefab;
+    GameObject smoke;
     // Start is called before the first frame update
     void Start()
     {
-        smokePrefab = transform.GetChild(0).gameObject;
+        smoke = transform.GetChild(0).gameObject;
     }
 
     // Update is called once per frame
@@ -17,14 +18,14 @@ public class SmokeGrenades : MonoBehaviour
     {
         if (transform.parent == null)
         {
-            StartCoroutine(Explode());
+            StartCoroutine(SmokeExplode());
         }
     }
-    IEnumerator Explode()
+    IEnumerator SmokeExplode()
     {
         yield return new WaitForSeconds(explosionDelay);
-        GameObject smoke = Instantiate(smokePrefab, transform.position, Quaternion.identity);
         smoke.SetActive(true);
+        yield return new WaitForSeconds(duration);
         Destroy(gameObject);
     }
 }
