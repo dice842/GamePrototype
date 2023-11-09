@@ -14,6 +14,17 @@ namespace Demos.Simple.Behaviours
             this.Apples.Add(apple);
         }
 
-              
+        public AppleBehaviour Get()
+        {
+            var apple = this.Apples.FirstOrDefault();
+
+            if (apple == null)
+                return null;
+
+            this.Apples.Remove(apple);
+            apple.Drop();
+            
+            return apple;
+        }
     }
 }
