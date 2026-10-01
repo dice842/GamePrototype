@@ -37,7 +37,7 @@ public class PlayerMove : MonoBehaviour
     {
         playerControl.canMove = false;
         playerControl.canUseItem = false;
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         playerAdility.useStamina(10f);
         StartCoroutine(StartDash(dashDir));
 
@@ -45,7 +45,7 @@ public class PlayerMove : MonoBehaviour
 
     IEnumerator StartDash(Vector3 dir)
     {
-        rb.velocity = dir * dashSpeed;
+        rb.linearVelocity = dir * dashSpeed;
         yield return new WaitForSeconds(dashDuration);
         EndDash();
         yield break;
@@ -54,6 +54,6 @@ public class PlayerMove : MonoBehaviour
     void EndDash()
     {
         playerControl.canMove = true;
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
     }
 }
